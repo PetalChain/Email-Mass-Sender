@@ -7,7 +7,7 @@ from time import sleep
 from email.message import EmailMessage
 
 
-def parse_email_addresses(file, num_of_addresses):
+def parse_receiver_addresses(file):
     """
     This function reads all email addresses from file into a list. Then it stores only the first num_of_addresses email addresses
     into a new list (gmail 100 emails/day limit) and returns it for use. It then deletes the n email addresses just
@@ -22,13 +22,13 @@ def parse_email_addresses(file, num_of_addresses):
     with open(file, 'r') as f:
         all_addresses = f.read().splitlines()       # read all email addresses into all address list
 
-    remaining_addresses = "\n".join(all_addresses[num_of_addresses:])        # join all address list into a newline separated string "remaining_addresses" for writing
+    return all_addresses
 
-    with open(file, 'w') as d:
-        d.write(remaining_addresses)      # write remaining_addresses back to file.
+def parse_sender_addresses(file):
+    with open(file, 'r') as f:
+        all_addresses = f.read().splitlines()       # read all email addresses into all address list
 
-    return all_addresses[:num_of_addresses]
-
+    return all_addresses
 
 def create_message(subject, sender, receiver, body, attachments=None):
     """
@@ -79,7 +79,7 @@ def send_email(username, password, message):
     :return: sends an email
     """
 
-    email_server = 	'smtp-mail.outlook.com'
+    email_server = 	'smtp.gmail.com'
     port = 587
 
     context = ssl.create_default_context()
@@ -94,11 +94,9 @@ def send_email(username, password, message):
 
         server.send_message(message)
 
-        print("Email successfully sent.")
-
     except smtplib.SMTPException as exc:
 
-        print("Error sending email.")
+        print('FROM:'+username+"("+password+"):Error sending email.")
         print(exc)
 
     finally:
